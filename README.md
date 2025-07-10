@@ -1,69 +1,82 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+````md
+# 🎬 CineGuide
 
-Currently, two official plugins are available:
+Интерактивное веб-приложение для просмотра фильмов с бесконечной прокруткой, фильтрацией по жанрам, рейтингу и году, а также просмотром подробной информации о каждом фильме.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Функции
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 🔎 Поиск фильмов по жанру, рейтингу и году
+- ♾️ Бесконечная прокрутка фильмов
+- ⭐ Просмотр подробной информации о фильме
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Технологии
+
+- **React + TypeScript**
+- **Vite** — для сборки и разработки
+- **React Router** — маршрутизация
+- **Axios** — запросы к API
+- **CSS** — ручная стилизация 
+
+---
+
+## 📦 Установка и запуск
+
+1. **Клонируйте репозиторий:**
+
+```bash
+git clone https://github.com/your-username/...
+````
+
+2. **Установите зависимости:**
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Запустите проект:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Проект будет доступен по адресу: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 📡 Источник данных
+
+Проект использует **[Kinopoisk.dev API](https://kinopoisk.dev/)**.
+Перед запуском убедитесь, что у вас есть API-ключ и правильно настроен файл `api/kinopoisk.ts`.
+
+```ts
+// Пример настройки
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'https://api.kinopoisk.dev',
+  headers: {
+    'X-API-KEY': 'ВАШ_API_КЛЮЧ'
+  }
+});
+
+export default api;
+```
+
+---
+
+## 🧑‍🎨 Автор
+
+Разработано Имраном для учебных и практических целей.
+
+---
+
+## 📃 Лицензия
+
+MIT — используйте свободно.
+
