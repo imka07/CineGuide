@@ -6,7 +6,7 @@ interface MovieDetailData {
   id: string;
   name: string;
   year: number;
-  rating: number;
+  rating: { kp: number } | null;
   description: string;
   poster: { url: string } | null;
   releaseDate: string;
@@ -22,9 +22,19 @@ const MovieDetail: React.FC = () => {
     const fetchDetail = async () => {
       try {
         const { data } = await api.get(`/movie/${id}`);
-        setMovie(data);
+        // Маппим ответ API в наш интерфейс
+        setMovie({
+          id: data.id,
+          name: data.name || data.title || 'Unknown',
+          year: data.year ?? new Date(data.releaseDate).getFullYear(),
+          rating: data.rating ? { kp: data.rating.kp } : null,
+          description: data.description || data.descriptionFull || '',
+          poster: data.poster || null,
+          releaseDate: data.releaseDate,
+          genres: data.genres?.map((g: any) => g.name) || [],
+        });
       } catch (e) {
-        console.error(e);
+        console.error('API error:', e);
       } finally {
         setLoading(false);
       }
@@ -32,22 +42,21 @@ const MovieDetail: React.FC = () => {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!movie) return <p>Movie not found.</p>;
+  if (loading) return <p>Загрузка...</p>;
+  if (!movie) return <p>Фильм не найден.</p>;
 
   return (
     <div className="movie-detail-page">
       <h1>{movie.name}</h1>
-      {movie.poster ? (
-        <img src={movie.poster.url} alt={movie.name} />
-      ) : (
-        <div>No Image</div>
-      )}
-      <p>Рейтинг: {movie.rating.toFixed(1)}</p>
+      {movie.poster
+        ? <img src={movie.poster.url} alt={movie.name} />
+        : <div>No Image</div>
+      }
+      <p>Рейтинг: {movie.rating ? movie.rating.kp.toFixed(1) : '—'}</p>
       <p>Дата: {new Date(movie.releaseDate).toLocaleDateString()}</p>
       <p>Год: {movie.year}</p>
       <div>
-        <strong>Жанр:</strong> {movie.genres.join(', ')}
+        <strong>Жанры:</strong> {movie.genres.join(', ')}
       </div>
       <div className="description">
         <p>{movie.description}</p>

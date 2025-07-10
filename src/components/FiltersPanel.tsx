@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 
 
 const genresList = [
-  'Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance',
+'Боевик', 'Комедия', 'Драма', 'Ужасы', 'Научная фантастика', 'Триллер', 'Мелодрама',
+
 ];
 
 const FiltersPanel: React.FC = () => {

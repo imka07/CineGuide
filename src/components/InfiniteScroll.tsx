@@ -86,7 +86,7 @@ const fetchMovies = async () => {
           <MovieCard key={movie.id} movie={movie} />
         ))}
       </div>
-      {hasMore && <div ref={loader} className="loader">Loading...</div>}
+      {hasMore && <div ref={loader} className="loader">Загрузка...</div>}
     </div>
   );
 };
