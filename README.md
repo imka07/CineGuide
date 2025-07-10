@@ -55,7 +55,7 @@ npm run dev
 Перед запуском убедитесь, что у вас есть API-ключ и правильно настроен файл `api/kinopoisk.ts`.
 
 ```ts
-// Пример настройки
+// Пример настройки api (kinopoisk.ts)
 import axios from 'axios';
 
 const api = axios.create({
