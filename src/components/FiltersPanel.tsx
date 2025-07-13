@@ -17,7 +17,6 @@ const FiltersPanel: React.FC = () => {
 
   const applyFilters = () => {
     const params: Record<string, any> = {};
-    genres.forEach(g => params.genre = genres);
     params.ratingGte = ratingGte.toString();
     params.ratingLte = ratingLte.toString();
     params.yearGte = yearGte.toString();

@@ -1,10 +1,10 @@
 export interface Movie {
-  id: string
-  title: string
-  year: number
-  rating: number
-  genres: string[]
-  // add other fields as needed
+  id: string;
+  title: string;
+  year: number;
+  rating: number;
+  genres: string[];
+  poster?: { url: string } | null;
 }
 
 export interface MovieListResponse {

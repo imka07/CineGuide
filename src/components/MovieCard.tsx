@@ -1,27 +1,37 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-export interface Movie {
-  id: string;
-  name: string;
-  year: number;
-  rating: { kp: number } | null;
-  poster: { url: string } | null;
-}
+import { useFavorites } from '../context/FavoritesContext';
+import type { Movie } from '../types';
 
 const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => {
   const navigate = useNavigate();
-  const kpRating = movie.rating?.kp;
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(movie.id);
+
   return (
-    <div className="movie-card" onClick={() => navigate(`/movie/${movie.id}`)}>
-      {movie.poster ? (
-        <img src={movie.poster.url} alt={movie.name} />
-      ) : (
-        <div className="no-poster">No Image</div>
-      )}
-      <h3>{movie.name}</h3>
-      <p>{movie.year}</p>
-      <p>{kpRating != null ? kpRating.toFixed(1) : '—'}</p>
+    <div className="movie-card">
+      <div className="poster-container" onClick={() => navigate(`/movie/${movie.id}`)}>
+        {movie.poster?.url ? (
+          <img src={movie.poster.url} alt={movie.title} className="poster" />
+        ) : (
+          <div className="no-poster">Без постера</div>
+        )}
+      </div>
+
+      <div className="info">
+        <h3 onClick={() => navigate(`/movie/${movie.id}`)} className="cursor-pointer">
+          {movie.title}
+        </h3>
+        <p>{movie.year}</p>
+        <p>{typeof movie.rating === 'number' ? movie.rating.toFixed(1) : '—'}</p>
+      </div>
+
+      <button
+        onClick={() => toggleFavorite(movie)}
+        className={`favorite-btn ${favorite ? 'active' : ''}`}
+      >
+        {favorite ? '★ Удалить из избранного' : '☆ В избранное'}
+      </button>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import MovieCard from '../components/MovieCard';
-import type { Movie as MovieCardType } from '../components/MovieCard';
+import type { Movie } from '../types';
 
 const Favorites: React.FC = () => {
-  const [favorites, setFavorites] = useState<MovieCardType[]>([]);
+  const [favorites, setFavorites] = useState<Movie[]>([]);
 
   useEffect(() => {
     const stored = localStorage.getItem('favorites');

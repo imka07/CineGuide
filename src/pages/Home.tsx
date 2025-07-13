@@ -4,7 +4,7 @@ import InfiniteScroll from '../components/InfiniteScroll';
 
 const Home: React.FC = () => (
   <div className="home-page">
-    <h1>Личный гид по фильмам</h1>
+    <h3>Личный гид по фильмам</h3>
     <FiltersPanel />
     <InfiniteScroll />
   </div>

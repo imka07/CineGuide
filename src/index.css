@@ -58,6 +58,12 @@ h2 {
   margin-bottom: 16px;
 }
 
+h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: var(--vk-blue);
+}
+
 
 .vk-card {
   background-color: var(--vk-card-bg);
@@ -132,7 +138,6 @@ h2 {
 
 
 .movie-detail-page {
-  composes: vk-card;
   padding: 20px;
 }
 
@@ -260,4 +265,35 @@ body.modal-open {
 .genre-option.selected {
   background: var(--vk-blue);
   color: var(--vk-white);
+}
+
+.app-header {
+  padding: 16px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--vk-blue);
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.app-main {
+  padding: 16px;
 }

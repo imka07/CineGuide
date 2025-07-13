@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/kinopoisk';
-import MovieCard from './MovieCard';
-import type { Movie } from './MovieCard';
+import MovieCard from '../components/MovieCard';
+import type { Movie } from '../types';
 import { useSearchParams } from 'react-router-dom';
 
 const InfiniteScroll: React.FC = () => {
