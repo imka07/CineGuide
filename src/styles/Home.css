@@ -45,7 +45,6 @@
   padding: 32px;
   max-width: 480px;
   width: 90%;
-  box-shadow: var(--card-shadow);
   animation: popIn 0.3s ease-out;
 }
 @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }

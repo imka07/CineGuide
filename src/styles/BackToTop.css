@@ -1,0 +1,23 @@
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 1rem;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: opacity var(--transition);
+  opacity: 0.8;
+}
+.back-to-top:hover {
+  opacity: 1;
+}
+
+/* обязательно добавьте в index.css для кнопок min-size */
+button.back-to-top {
+  min-width: 44px;
+  min-height: 44px;
+}

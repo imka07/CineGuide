@@ -1,3 +1,4 @@
+
 export interface Movie {
   id: string;
   title: string;
@@ -6,6 +7,7 @@ export interface Movie {
   genres: string[];
   poster?: { url: string } | null;
 }
+
 
 export interface MovieListResponse {
   docs: Movie[]

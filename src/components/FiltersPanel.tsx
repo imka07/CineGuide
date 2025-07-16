@@ -1,40 +1,60 @@
+// src/components/FiltersPanel.tsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import api from '../api/tmdbProxy';
 
-const genresList = [
-  'Боевик', 'Комедия', 'Драма', 'Ужасы',
-  'Научная фантастика', 'Триллер', 'Мелодрама',
-];
+type Genre = { id: number; name: string };
 
 const FiltersPanel: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [genres, setGenres] = useState<string[]>(searchParams.getAll('genre'));
-  const [ratingGte, setRatingGte] = useState(Number(searchParams.get('ratingGte') ?? 0));
-  const [ratingLte, setRatingLte] = useState(Number(searchParams.get('ratingLte') ?? 10));
-  const [yearGte, setYearGte] = useState(Number(searchParams.get('yearGte') ?? 1990));
-  const [yearLte, setYearLte] = useState(Number(searchParams.get('yearLte') ?? new Date().getFullYear()));
+  const [availableGenres, setAvailableGenres] = useState<Genre[]>([]);
+  const [selected, setSelected] = useState<number[]>(
+    searchParams.getAll('genre').map(v => Number(v)).filter(v => !isNaN(v))
+  );
+  const [ratingGte, setRatingGte] = useState(
+    Number(searchParams.get('ratingGte') ?? 0)
+  );
+  const [ratingLte, setRatingLte] = useState(
+    Number(searchParams.get('ratingLte') ?? 10)
+  );
+  const [yearGte, setYearGte] = useState(
+    Number(searchParams.get('yearGte') ?? 1990)
+  );
+  const [yearLte, setYearLte] = useState(
+    Number(searchParams.get('yearLte') ?? new Date().getFullYear())
+  );
 
-const applyFilters = () => {
+  // Загрузка доступных жанров
+  useEffect(() => {
+    api
+      .get<Genre[]>('/genre/movie/list')
+      .then(res => {
+        const list = Array.isArray(res.data) ? res.data : [];
+        setAvailableGenres(list);
+      })
+      .catch(err => {
+        console.error('Failed to load genres:', err);
+        setAvailableGenres([]);
+      });
+  }, []);
 
-  const params: Record<string, string | string[]> = {};
+  // Обновление URL-параметров при изменении фильтров
+  useEffect(() => {
+    const params: Record<string, string | string[]> = {
+      ratingGte: String(ratingGte),
+      ratingLte: String(ratingLte),
+      yearGte: String(yearGte),
+      yearLte: String(yearLte),
+    };
+    if (selected.length) {
+      params.genre = selected.map(String);
+    }
+    setSearchParams(params);
+  }, [selected, ratingGte, ratingLte, yearGte, yearLte, setSearchParams]);
 
-  if (genres.length) {
-    params.genre = genres;           
-  }
-  params.ratingGte = String(ratingGte);
-  params.ratingLte = String(ratingLte);
-  params.yearGte = String(yearGte);
-  params.yearLte = String(yearLte);
-
-  setSearchParams(params);
-};
-
-
-  useEffect(() => { applyFilters(); }, [genres, ratingGte, ratingLte, yearGte, yearLte]);
-
-  const toggleGenre = (g: string) =>
-    setGenres(prev =>
-      prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]
+  const toggleGenre = (id: number) =>
+    setSelected(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
 
   return (
@@ -43,15 +63,19 @@ const applyFilters = () => {
       <div className="filter-group">
         <label>Жанры</label>
         <div className="genre-select">
-          {genresList.map(g => (
-            <div
-              key={g}
-              className={`genre-option ${genres.includes(g) ? 'selected' : ''}`}
-              onClick={() => toggleGenre(g)}
-            >
-              {g}
-            </div>
-          ))}
+          {availableGenres.length ? (
+            availableGenres.map(g => (
+              <div
+                key={g.id}
+                className={`genre-option ${selected.includes(g.id) ? 'selected' : ''}`}
+                onClick={() => toggleGenre(g.id)}
+              >
+                {g.name}
+              </div>
+            ))
+          ) : (
+            <p>Загрузка жанров...</p>
+          )}
         </div>
       </div>
 
@@ -61,15 +85,21 @@ const applyFilters = () => {
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             className="vk-input"
-            type="number" value={ratingGte}
-            min={0} max={10} step={0.1}
+            type="number"
+            value={ratingGte}
+            min={0}
+            max={10}
+            step={0.1}
             onChange={e => setRatingGte(Number(e.target.value))}
           />
           <span>—</span>
           <input
             className="vk-input"
-            type="number" value={ratingLte}
-            min={0} max={10} step={0.1}
+            type="number"
+            value={ratingLte}
+            min={0}
+            max={10}
+            step={0.1}
             onChange={e => setRatingLte(Number(e.target.value))}
           />
         </div>
@@ -81,15 +111,19 @@ const applyFilters = () => {
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             className="vk-input"
-            type="number" value={yearGte}
-            min={1990} max={new Date().getFullYear()}
+            type="number"
+            value={yearGte}
+            min={1900}
+            max={new Date().getFullYear()}
             onChange={e => setYearGte(Number(e.target.value))}
           />
           <span>—</span>
           <input
             className="vk-input"
-            type="number" value={yearLte}
-            min={1990} max={new Date().getFullYear()}
+            type="number"
+            value={yearLte}
+            min={1900}
+            max={new Date().getFullYear()}
             onChange={e => setYearLte(Number(e.target.value))}
           />
         </div>

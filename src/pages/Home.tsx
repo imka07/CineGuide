@@ -4,6 +4,7 @@ import InfiniteScroll from '../components/InfiniteScroll';
 import { quizData } from '../data/quiz';
 import type { QuizQuestion } from '../data/quiz';
 import '../styles/Home.css'; // стили модалки и бейджей
+import BackToTop from '../components/BackToTop';
 
 const ALL_QUESTIONS: QuizQuestion[] = Object.values(quizData).flat();
 
@@ -83,6 +84,7 @@ const Home: React.FC = () => {
 
       <FiltersPanel />
       <InfiniteScroll />
+      <BackToTop />
 
       {/* Модалка викторины */}
       {modalOpen && (

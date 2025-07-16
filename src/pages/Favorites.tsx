@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import MovieCard from '../components/MovieCard';
-import type { Movie } from '../types';
+import { useFavorites } from '../context/FavoritesContext'; // импорт хука
 
 const Favorites: React.FC = () => {
-  const [favorites, setFavorites] = useState<Movie[]>([]);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('favorites');
-    if (stored) setFavorites(JSON.parse(stored));
-  }, []);
+  const { favorites } = useFavorites();
 
   return (
     <div className="favorites-page">

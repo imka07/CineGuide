@@ -1,5 +1,6 @@
+// src/components/InfiniteScroll.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import api from '../api/kinopoisk';
+import api from '../api/tmdbProxy';
 import MovieCard from '../components/MovieCard';
 import type { Movie } from '../types';
 import { useSearchParams } from 'react-router-dom';
@@ -21,61 +22,71 @@ const InfiniteScroll: React.FC = () => {
 
   const fetchMovies = async () => {
     try {
-      const params: any = {
-        page, limit: 50,
-        year: `${filters.yearGte}-${filters.yearLte}`,
-        'rating.kp': `${filters.ratingGte}-${filters.ratingLte}`,
+      const params: Record<string, any> = {
+        page,
+        sort_by: 'popularity.desc',
+        'vote_average.gte': filters.ratingGte,
+        'vote_average.lte': filters.ratingLte,
+        'primary_release_date.gte': `${filters.yearGte}-01-01`,
+        'primary_release_date.lte': `${filters.yearLte}-12-31`,
       };
-      filters.genre.forEach((g, i) => {
-        params[`genres.name[${i}]`] = g;
-      });
-      const { data } = await api.get('/movie', { params });
-      const newMovies: Movie[] = data.docs.map((doc: any) => ({
-        id: doc.id,
+      if (filters.genre.length) {
+        params.with_genres = filters.genre.join(',');
+      }
+
+      const { data } = await api.get('/discover/movie', { params });
+      const results = Array.isArray(data.results) ? data.results : [];
+      const newMovies: Movie[] = results.map((doc: any) => ({
+        id: String(doc.id),
         title: doc.title || doc.name || 'Unknown',
-        year: doc.year || new Date(doc.releaseDate).getFullYear(),
-        rating: doc.rating ? { kp: doc.rating.kp } : null,
-        poster: doc.poster || null,
+        year: doc.release_date
+          ? new Date(doc.release_date).getFullYear()
+          : new Date().getFullYear(),
+        rating: doc.vote_average,
+        poster: doc.poster_path
+          ? { url: `https://image.tmdb.org/t/p/w500${doc.poster_path}` }
+          : null,
         genres: doc.genres?.map((g: any) => g.name) || [],
       }));
+
       setMovies(prev => {
-        const ids = new Set(prev.map(m => m.id));
-        const uniq = newMovies.filter(m => !ids.has(m.id));
+        const existing = new Set(prev.map(m => m.id));
+        const uniq = newMovies.filter(m => !existing.has(m.id));
         return [...prev, ...uniq];
       });
-      setHasMore(page < data.pages);
+
+      setHasMore(data.total_pages ? page < data.total_pages : false);
     } catch (e) {
-      console.error(e);
+      console.error('fetchMovies error:', e);
     }
   };
 
   useEffect(() => {
-    setMovies([]); setPage(1);
+    // сброс при изменении фильтров
+    setMovies([]);
+    setPage(1);
+    setHasMore(true);
   }, [searchParams.toString()]);
 
-  useEffect(() => { fetchMovies(); }, [page, searchParams.toString()]);
+  useEffect(() => {
+    fetchMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchParams.toString()]);
 
-useEffect(() => {
-  const obs = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting && hasMore) {
-        setPage(p => p + 1);
-      }
-    },
-    { threshold: 1 }
-  );
-
-  if (loader.current) {
-    obs.observe(loader.current);
-  }
-
-  return () => {
-    if (loader.current) {
-      obs.unobserve(loader.current);
-    }
-  };
-}, [hasMore]);
-
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore) {
+          setPage(p => p + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+    if (loader.current) observer.observe(loader.current);
+    return () => {
+      if (loader.current) observer.unobserve(loader.current);
+    };
+  }, [hasMore]);
 
   return (
     <>
@@ -85,7 +96,9 @@ useEffect(() => {
         ))}
       </div>
       {hasMore && (
-        <div ref={loader} className="loading">Загрузка...</div>
+        <div ref={loader} className="loading">
+          Загрузка...
+        </div>
       )}
     </>
   );
