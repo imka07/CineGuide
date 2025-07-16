@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Movie } from '../types';
 import { fetchFavorites, addFavorite, removeFavorite } from '../api/favorites';
-import { getClientId } from '../utils/auth';
+
 
 interface FavoritesContextType {
   favorites: Movie[];
