@@ -5,7 +5,7 @@ const Header = () => (
     <h1>CineGuide</h1>
     <nav className="flex gap-4">
       <Link to="/">Главная</Link>
-      <Link to="/favorites">Избранное</Link> {/* 👈 эта ссылка */}
+      <Link to="/favorites">Избранное</Link>
     </nav>
   </header>
 );

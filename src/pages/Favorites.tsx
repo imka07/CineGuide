@@ -14,11 +14,11 @@ const Favorites: React.FC = () => {
     <div className="favorites-page">
       <h1>Избранное</h1>
       {favorites.length === 0 ? (
-        <p>Нет избранных.</p>
+        <p className="not-found">Нет избранных.</p>
       ) : (
-        <div className="grid grid-cols-4 gap-4">
-          {favorites.map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
+        <div className="movie-list">
+          {favorites.map(m => (
+            <MovieCard key={m.id} movie={m} />
           ))}
         </div>
       )}

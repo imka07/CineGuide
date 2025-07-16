@@ -26,12 +26,13 @@ const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => {
         <p>{typeof movie.rating === 'number' ? movie.rating.toFixed(1) : '—'}</p>
       </div>
 
-      <button
+     <button
         onClick={() => toggleFavorite(movie)}
-        className={`favorite-btn ${favorite ? 'active' : ''}`}
+        className={`vk-button favorite-btn ${favorite ? 'active' : ''}`}
       >
         {favorite ? '★ Удалить из избранного' : '☆ В избранное'}
       </button>
+
     </div>
   );
 };
