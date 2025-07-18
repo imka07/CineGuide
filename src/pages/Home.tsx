@@ -72,7 +72,11 @@ const Home: React.FC = () => {
 
       {/* Кнопка викторины и бейдж */}
       <div className="quiz-header">
-        <button onClick={openQuiz}>Начать викторину</button>
+         <div className="quiz-header-text">
+            <h2>Проверь себя!</h2>
+            <p>Пройди нашу короткую викторину и узнай, настоящий ли ты киноман 🎬</p>
+          </div>
+        <button className='quiz-start-btn' onClick={openQuiz}>Начать викторину</button>
         {badge && (
           <img
             src={`/${badge}`}
@@ -117,7 +121,7 @@ const Home: React.FC = () => {
                       ? 'Неплохо, но можно лучше!'
                       : 'Похоже, стоит пересмотреть классику.'}
                 </p>
-                <button onClick={() => setModalOpen(false)}>Закрыть</button>
+                <button className='close-modal-btn' onClick={() => setModalOpen(false)}>Закрыть</button>
               </>
             )}
           </div>

@@ -1,3 +1,32 @@
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .app-header .app-title {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .app-header nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .app-header nav a {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 6px 8px;
+    min-width: 80px;
+  }
+}
+
 :root {
   --bg: #0d0f15;
   --bg-alt: #1a1c23;
@@ -8,7 +37,7 @@
   --accent: #7c4dff;
   --accent-hover: #693bf2;
   --card-bg: #1f2129;
-  --card-shadow: 0 8px 16px rgba(0,0,0,0.6);
+  --card-shadow: 0 4px 16px rgba(0,0,0,0.6);
   --radius: 12px;
   --transition: 0.3s ease-out;
 }
@@ -48,22 +77,29 @@ button {
   margin-bottom: 32px;
 }
 .app-title {
-  font-size: 1.75rem;
+  font-size: 18px;
   color: var(--text-main);
 }
-.nav-links {
+.app-header nav {
   display: flex;
   gap: 16px;
 }
-.nav-links a {
+.app-header nav a {
+  font-size: 1rem;
   color: var(--text-secondary);
-  font-weight: 500;
-  transition: color var(--transition);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  transition: background var(--transition), color var(--transition);
   text-decoration: none;
 }
-.nav-links a:hover {
+.app-header nav a:hover {
+  background: var(--card-bg);
   color: var(--primary);
 }
+
+
+
+
 
 
 .filters-panel {
@@ -202,25 +238,66 @@ button {
 
 .favorite-btn {
   position: absolute;
-  bottom: 0px;
+  bottom: 0;                    /* прижата к низу контейнера */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
+
+  display: flex;                /* чтобы gap работал */
+  align-items: center;
+  justify-content: center;
+
   gap: 6px;
   background: var(--accent);
   color: #fff;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+
+  /* фиксируем высоту и заставляем текст переноситься */
+  height: 40px;               /* например, 40px */
+  padding: 0 16px;              /* убрали вертикальный padding */
+  font-size: 14px;
+  line-height: 1.2;             /* чтобы текст центрировался */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
   border-radius: var(--radius);
   transition: background var(--transition), transform var(--transition);
-  width: 100%;
+
+  width: calc(100% - 16px);     /* оставляем по 8px отступа слева и справа */
+  max-width: 300px;             /* опционально, чтобы не слишком растягивалась */
 }
+
 .favorite-btn:hover {
   background: var(--accent-hover);
 }
 
+.close-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+
+  padding: 10px 20px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.close-modal-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+
 
 .favorite-btn.active {
+  font-size: 10px;
   background: var(--primary);
 }
 .favorite-btn.active:hover {
@@ -231,6 +308,99 @@ button {
   display: flex;
   margin-top: 15px;
 }
+
+/* --- MovieDetail Page Styles --- */
+.movie-detail-page {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.movie-detail-page h1 {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Контейнер для постера + инфо */
+.movie-detail-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+/* Постер */
+.movie-detail-page .poster-container {
+  flex: 0 0 300px;
+  background: #2a2d36;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.movie-detail-page .poster-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Информационный блок */
+.movie-detail-info {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Основные поля */
+.movie-detail-info p,
+.movie-detail-info .genres {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* Жанры в виде чипов */
+.movie-detail-info .genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.movie-detail-info .genres span {
+  background: var(--accent);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+}
+
+/* Описание */
+.movie-detail-page .description {
+  margin-top: 16px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+/* Кнопка викторины */
+.quiz-start-btn {
+  margin: 24px auto 0;
+  display: block;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.quiz-start-btn:hover {
+  background: var(--primary-hover);
+}
+
 
 @keyframes spin {
   to { transform: rotate(360deg); }

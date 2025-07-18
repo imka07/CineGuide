@@ -1,8 +1,6 @@
-// src/pages/MovieDetail.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api/tmdbProxy';
-
 
 interface MovieDetailData {
   id: string;
@@ -47,27 +45,36 @@ const MovieDetail: React.FC = () => {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <p>Загрузка...</p>;
-  if (!movie) return <p>Фильм не найден.</p>;
+  if (loading) return <p className="loading">Загрузка...</p>;
+  if (!movie) return <p className="not-found">Фильм не найден.</p>;
 
   return (
     <div className="movie-detail-page">
       <h1>{movie.title}</h1>
-      <div className="poster-container">
-        {movie.poster ? (
-          <img src={movie.poster.url} alt={`Постер фильма «${movie.title}»`} />
-        ) : (
-          <div>No Image</div>
-        )}
-      </div>
-      <p>Рейтинг: {movie.rating.toFixed(1)}</p>
-      <p>Дата: {new Date(movie.releaseDate).toLocaleDateString()}</p>
-      <p>Год: {movie.year}</p>
-      <div>
-        <strong>Жанры:</strong> {movie.genres.join(', ')}
-      </div>
-      <div className="description">
-        <p>{movie.overview}</p>
+      <div className="movie-detail-content">
+        <div className="poster-container">
+          {movie.poster ? (
+            <img src={movie.poster.url} alt={`Постер фильма «${movie.title}»`} />
+          ) : (
+            <div className="no-poster">No Image</div>
+          )}
+        </div>
+
+        <div className="movie-detail-info">
+          <p><strong>Рейтинг:</strong> {movie.rating.toFixed(1)}</p>
+          <p><strong>Дата выхода:</strong> {new Date(movie.releaseDate).toLocaleDateString()}</p>
+          <p><strong>Год:</strong> {movie.year}</p>
+
+          <div className="genres">
+            {movie.genres.map(g => (
+              <span key={g}>{g}</span>
+            ))}
+          </div>
+
+          <div className="description">
+            <p>{movie.overview}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import MovieDetail from './pages/MovieDetail';
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <header className="app-header">
         <h1 className="app-title">CineGuide</h1>
         <nav className="nav-links">
@@ -21,8 +21,8 @@ function App() {
           <Route path="/movie/:id" element={<MovieDetail />} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </Router>
   );
 }
 
-export default App;
+export default App;  

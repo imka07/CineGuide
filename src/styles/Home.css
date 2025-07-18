@@ -1,31 +1,79 @@
+.quiz-header-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
+.quiz-header-text h2 {
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin: 0;
+}
 
+.quiz-header-text p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Уже существующие стили чуть поправим для размещения */
 .quiz-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.quiz-header button {
-  background: var(--primary);
-  color: #fff;
-  padding: 12px 24px;
-  font-size: 1rem;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(124,77,255,0.15), rgba(255,64,129,0.15));
   border-radius: var(--radius);
-  transition: background var(--transition), transform var(--transition);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-bottom: 32px;
+  transition: box-shadow var(--transition);
 }
-.quiz-header button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
+
+.quiz-header:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
+
+.quiz-start-btn {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+
+}
+
+.quiz-start-btn:hover {
+  background: linear-gradient(135deg, var(--accent), var(--primary-hover));
+  transform: translateY(-3px) scale(1.02);
+  transition: 0.3s ease-out;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
 .quiz-badge {
-  width: 40px;
-  height: 40px;
-  transition: transform var(--transition);
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  transition: transform var(--transition), filter var(--transition);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+  cursor: pointer;
 }
+
 .quiz-badge:hover {
-  transform: scale(1.1);
+  transform: rotate(-10deg) scale(1.1);
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
 }
+
+/* Адаптив для мобильных */
+
+
 
 
 .quiz-modal-overlay {
@@ -102,9 +150,15 @@
 @media (max-width: 600px) {
   .quiz-header {
     flex-direction: column;
-    gap: 8px;
+    text-align: center;
   }
-  .movie-list {
+  .quiz-header-text {
+    align-items: center;
+  }
+  .quiz-start-btn, .quiz-badge {
+    margin-top: 12px;
+  }
+   .movie-list {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
