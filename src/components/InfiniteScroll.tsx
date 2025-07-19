@@ -1,9 +1,8 @@
-// src/components/InfiniteScroll.tsx
 import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/tmdbProxy';
 import MovieCard from '../components/MovieCard';
 import type { Movie } from '../types';
-import { useSearchParams } from 'react-router-dom';
 
 const InfiniteScroll: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -12,6 +11,10 @@ const InfiniteScroll: React.FC = () => {
   const loader = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
 
+  // Базовый URL прокси для картинок
+  const proxyUrl = import.meta.env.VITE_PROXY_URL || 'http://localhost:3000';
+
+  // Собираем фильтры из query-параметров
   const filters = {
     genre: searchParams.getAll('genre'),
     ratingGte: Number(searchParams.get('ratingGte') ?? 0),
@@ -20,8 +23,10 @@ const InfiniteScroll: React.FC = () => {
     yearLte: Number(searchParams.get('yearLte') ?? new Date().getFullYear()),
   };
 
+  // Функция загрузки фильмов
   const fetchMovies = async () => {
     try {
+      // Параметры запроса к /discover/movie
       const params: Record<string, any> = {
         page,
         sort_by: 'popularity.desc',
@@ -34,8 +39,11 @@ const InfiniteScroll: React.FC = () => {
         params.with_genres = filters.genre.join(',');
       }
 
+      // Получаем данные
       const { data } = await api.get('/discover/movie', { params });
       const results = Array.isArray(data.results) ? data.results : [];
+
+      // Мапим в нашу модель Movie
       const newMovies: Movie[] = results.map((doc: any) => ({
         id: String(doc.id),
         title: doc.title || doc.name || 'Unknown',
@@ -43,36 +51,41 @@ const InfiniteScroll: React.FC = () => {
           ? new Date(doc.release_date).getFullYear()
           : new Date().getFullYear(),
         rating: doc.vote_average,
+        // Теперь картинка идёт через прокси
         poster: doc.poster_path
-          ? { url: `https://image.tmdb.org/t/p/w500${doc.poster_path}` }
+          ? { url: `${proxyUrl}/image${doc.poster_path}` }
           : null,
         genres: doc.genres?.map((g: any) => g.name) || [],
       }));
 
+      // Добавляем только уникальные фильмы
       setMovies(prev => {
         const existing = new Set(prev.map(m => m.id));
         const uniq = newMovies.filter(m => !existing.has(m.id));
         return [...prev, ...uniq];
       });
 
-      setHasMore(data.total_pages ? page < data.total_pages : false);
-    } catch (e) {
-      console.error('fetchMovies error:', e);
+      // Определяем, есть ли ещё страницы
+      setHasMore(typeof data.total_pages === 'number' ? page < data.total_pages : false);
+    } catch (err) {
+      console.error('fetchMovies error:', err);
     }
   };
 
+  // При смене фильтров — сбрасываем список и пагинацию
   useEffect(() => {
-    // сброс при изменении фильтров
     setMovies([]);
     setPage(1);
     setHasMore(true);
   }, [searchParams.toString()]);
 
+  // Загружаем при первой отрисовке и на смену page
   useEffect(() => {
     fetchMovies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchParams.toString()]);
 
+  // Интерсекшн-обсервер для бесконечного скролла
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -95,6 +108,7 @@ const InfiniteScroll: React.FC = () => {
           <MovieCard key={m.id} movie={m} />
         ))}
       </div>
+
       {hasMore && (
         <div ref={loader} className="loading">
           Загрузка...
