@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api/tmdbProxy';
 
+
 interface MovieDetailData {
   id: string;
   title: string;
@@ -18,32 +19,34 @@ const MovieDetail: React.FC = () => {
   const [movie, setMovie] = useState<MovieDetailData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const { data } = await api.get(`/movie/${id}`);
-        setMovie({
-          id: String(data.id),
-          title: data.title || data.name || 'Unknown',
-          year: data.release_date
-            ? new Date(data.release_date).getFullYear()
-            : new Date().getFullYear(),
-          rating: data.vote_average,
-          overview: data.overview || '',
-          poster: data.poster_path
-            ? { url: `https://image.tmdb.org/t/p/w500${data.poster_path}` }
-            : null,
-          releaseDate: data.release_date,
-          genres: data.genres?.map((g: any) => g.name) || [],
-        });
-      } catch (e) {
-        console.error('API error:', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDetail();
-  }, [id]);
+useEffect(() => {
+  const proxy = import.meta.env.VITE_PROXY_URL;
+  const fetchDetail = async () => {
+    try {
+      const { data } = await api.get(`/movie/${id}`);
+      setMovie({
+        id: String(data.id),
+        title: data.title || data.name || 'Unknown',
+        year: data.release_date
+          ? new Date(data.release_date).getFullYear()
+          : new Date().getFullYear(),
+        rating: data.vote_average,
+        overview: data.overview || '',
+        poster: data.poster_path
+          ? { url: `${proxy}/image${data.poster_path}` }
+          : null,
+        releaseDate: data.release_date,
+        genres: data.genres?.map((g: any) => g.name) || [],
+      });
+    } catch (e) {
+      console.error('API error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchDetail();
+}, [id]);
+
 
   if (loading) return <p className="loading">Загрузка...</p>;
   if (!movie) return <p className="not-found">Фильм не найден.</p>;
