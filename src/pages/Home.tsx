@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import FiltersPanel from '../components/FiltersPanel';
 import InfiniteScroll from '../components/InfiniteScroll';
+import ContentFilterInfo from '../components/ContentFilterInfo';
 import { quizData } from '../data/quiz';
 import type { QuizQuestion } from '../data/quiz';
 import '../styles/Home.css'; // стили модалки и бейджей
+import '../styles/ContentFilter.css';
 import BackToTop from '../components/BackToTop';
 
 const ALL_QUESTIONS: QuizQuestion[] = Object.values(quizData).flat();
@@ -86,6 +88,7 @@ const Home: React.FC = () => {
         )}
       </div>
 
+      <ContentFilterInfo />
       <FiltersPanel />
       <InfiniteScroll />
       <BackToTop />

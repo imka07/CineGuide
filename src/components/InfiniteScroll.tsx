@@ -3,13 +3,31 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../api/tmdbProxy';
 import MovieCard from '../components/MovieCard';
 import type { Movie } from '../types';
+import { filterSafeContent, logBlockedContent } from '../utils/contentFilter';
+import { testContentFilter, testSpecificMovie } from '../utils/contentFilterTest';
+import '../styles/InfiniteScroll.css';
 
 const InfiniteScroll: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const loader = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams();
+
+  // Запускаем тестирование фильтрации при первой загрузке (только в development)
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      testContentFilter();
+      
+      // Тестируем проблемные фильмы
+      console.log('🔍 Тестирование проблемных фильмов:');
+      testSpecificMovie("Война миров", ["sci-fi", "action"], 4.6, 2025);
+      testSpecificMovie("Истребитель демонов: Бесконечный замок", ["animation", "action"], 7.0, 2025);
+      testSpecificMovie("МЗГАН", ["action", "drama"], 6.5, 2024);
+    }
+  }, []);
 
   // Базовый URL прокси для картинок
   const proxyUrl = import.meta.env.VITE_PROXY_URL || 'http://localhost:3000';
@@ -25,7 +43,12 @@ const InfiniteScroll: React.FC = () => {
 
   // Функция загрузки фильмов
   const fetchMovies = async () => {
+    if (loading) return;
+    
     try {
+      setLoading(true);
+      setError(null);
+      
       // Параметры запроса к /discover/movie
       const params: Record<string, any> = {
         page,
@@ -50,7 +73,7 @@ const InfiniteScroll: React.FC = () => {
         year: doc.release_date
           ? new Date(doc.release_date).getFullYear()
           : new Date().getFullYear(),
-        rating: doc.vote_average,
+        rating: doc.vote_average || 0,
         // Теперь картинка идёт через прокси
         poster: doc.poster_path
           ? { url: `${proxyUrl}/image${doc.poster_path}` }
@@ -58,10 +81,25 @@ const InfiniteScroll: React.FC = () => {
         genres: doc.genres?.map((g: any) => g.name) || [],
       }));
 
-      // Добавляем только уникальные фильмы
+                  // Фильтруем контент согласно правилам ВК
+            const safeMovies = filterSafeContent(newMovies);
+            
+            console.log(`📊 Фильтрация: ${newMovies.length} фильмов получено, ${safeMovies.length} прошло фильтрацию`);
+
+            // Логируем заблокированные фильмы для отладки
+            const blockedMovies = newMovies.filter(movie => !filterSafeContent([movie]).length);
+            if (blockedMovies.length > 0) {
+              console.log(`❌ Заблокировано ${blockedMovies.length} фильмов:`);
+              blockedMovies.forEach(movie => {
+                console.log(`   - ${movie.title} (${movie.year}, рейтинг: ${movie.rating})`);
+                logBlockedContent(movie, 'Нарушение правил ВК');
+              });
+            }
+
+      // Добавляем только уникальные и безопасные фильмы
       setMovies(prev => {
         const existing = new Set(prev.map(m => m.id));
-        const uniq = newMovies.filter(m => !existing.has(m.id));
+        const uniq = safeMovies.filter(m => !existing.has(m.id));
         return [...prev, ...uniq];
       });
 
@@ -69,6 +107,9 @@ const InfiniteScroll: React.FC = () => {
       setHasMore(typeof data.total_pages === 'number' ? page < data.total_pages : false);
     } catch (err) {
       console.error('fetchMovies error:', err);
+      setError('Ошибка загрузки фильмов');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,6 +142,17 @@ const InfiniteScroll: React.FC = () => {
     };
   }, [hasMore]);
 
+  if (error) {
+    return (
+      <div className="error-container">
+        <p className="error">{error}</p>
+        <button onClick={() => window.location.reload()} className="retry-btn">
+          Попробовать снова
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="movie-list">
@@ -111,7 +163,7 @@ const InfiniteScroll: React.FC = () => {
 
       {hasMore && (
         <div ref={loader} className="loading">
-          Загрузка...
+          {loading ? 'Загрузка...' : 'Прокрутите для загрузки'}
         </div>
       )}
     </>
