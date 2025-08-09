@@ -49,7 +49,7 @@ const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => {
         <h3 className="cursor-pointer">
           {movie.title}
         </h3>
-        <p>{movie.year}</p>
+        <p>{movie.year > 0 ? movie.year : '—'}</p>
         <p>{typeof movie.rating === 'number' ? movie.rating.toFixed(1) : '—'}</p>
       </div>
 

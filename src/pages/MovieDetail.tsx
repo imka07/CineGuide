@@ -52,9 +52,7 @@ const MovieDetail: React.FC = () => {
         const movieData = {
           id: String(data.id),
           title: data.title || data.name || 'Unknown',
-          year: data.release_date
-            ? new Date(data.release_date).getFullYear()
-            : new Date().getFullYear(),
+          year: data.release_date ? new Date(data.release_date).getFullYear() : 0,
           rating: data.vote_average || 0,
           overview: data.overview || '',
           poster: data.poster_path
@@ -113,8 +111,8 @@ const MovieDetail: React.FC = () => {
 
         <div className="movie-detail-info">
           <p><strong>Рейтинг:</strong> {movie.rating.toFixed(1)}</p>
-          <p><strong>Дата выхода:</strong> {new Date(movie.releaseDate).toLocaleDateString()}</p>
-          <p><strong>Год:</strong> {movie.year}</p>
+          <p><strong>Дата выхода:</strong> {movie.releaseDate ? new Date(movie.releaseDate).toLocaleDateString() : '—'}</p>
+          <p><strong>Год:</strong> {movie.year > 0 ? movie.year : '—'}</p>
 
           <div className="genres">
             {movie.genres.map(g => (

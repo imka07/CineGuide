@@ -60,7 +60,7 @@ const FiltersPanel: React.FC = () => {
   return (
     <div className="filters-panel">
       {/* Жанры */}
-      <div className="filter-group">
+      <div className="filter-group filter-genres">
         <label>Жанры</label>
         <div className="genre-select">
           {availableGenres.length ? (
@@ -79,8 +79,10 @@ const FiltersPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Рейтинг */}
-      <div className="filter-group">
+      {/* Правая колонка: рейтинг + год */}
+      <div className="filters-aside">
+        {/* Рейтинг */}
+        <div className="filter-group filter-rating">
         <label>Рейтинг</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
@@ -103,17 +105,17 @@ const FiltersPanel: React.FC = () => {
             onChange={e => setRatingLte(Number(e.target.value))}
           />
         </div>
-      </div>
+        </div>
 
-      {/* Год */}
-      <div className="filter-group">
+        {/* Год */}
+        <div className="filter-group filter-year">
         <label>Год</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             className="vk-input"
             type="number"
             value={yearGte}
-            min={1900}
+            min={1890}
             max={new Date().getFullYear()}
             onChange={e => setYearGte(Number(e.target.value))}
           />
@@ -122,11 +124,12 @@ const FiltersPanel: React.FC = () => {
             className="vk-input"
             type="number"
             value={yearLte}
-            min={1900}
+            min={1890}
             max={new Date().getFullYear()}
             onChange={e => setYearLte(Number(e.target.value))}
           />
         </div>
+      </div>
       </div>
     </div>
   );

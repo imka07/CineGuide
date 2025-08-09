@@ -233,8 +233,8 @@ export function isContentSafe(content: ContentFilter): boolean {
     return false;
   }
   
-  // Проверяем год выпуска
-  if (content.year < CONTENT_FILTER_CONFIG.MIN_YEAR) {
+  // Проверяем год выпуска (0 означает «не указан», не блокируем по году в этом случае)
+  if (content.year > 0 && content.year < CONTENT_FILTER_CONFIG.MIN_YEAR) {
     console.log('❌ Заблокирован по году:', content.title, content.year, '<', CONTENT_FILTER_CONFIG.MIN_YEAR);
     return false;
   }

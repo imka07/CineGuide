@@ -53,10 +53,14 @@ const InfiniteScroll: React.FC = () => {
       const params: Record<string, any> = {
         page,
         sort_by: 'popularity.desc',
+        include_adult: false,
         'vote_average.gte': filters.ratingGte,
         'vote_average.lte': filters.ratingLte,
         'primary_release_date.gte': `${filters.yearGte}-01-01`,
         'primary_release_date.lte': `${filters.yearLte}-12-31`,
+        // Дублируем фильтры по дате для совместимости
+        'release_date.gte': `${filters.yearGte}-01-01`,
+        'release_date.lte': `${filters.yearLte}-12-31`,
       };
       if (filters.genre.length) {
         params.with_genres = filters.genre.join(',');
@@ -67,19 +71,19 @@ const InfiniteScroll: React.FC = () => {
       const results = Array.isArray(data.results) ? data.results : [];
 
       // Мапим в нашу модель Movie
-      const newMovies: Movie[] = results.map((doc: any) => ({
-        id: String(doc.id),
-        title: doc.title || doc.name || 'Unknown',
-        year: doc.release_date
-          ? new Date(doc.release_date).getFullYear()
-          : new Date().getFullYear(),
-        rating: doc.vote_average || 0,
-        // Теперь картинка идёт через прокси
-        poster: doc.poster_path
-          ? { url: `${proxyUrl}/image${doc.poster_path}` }
-          : null,
-        genres: doc.genres?.map((g: any) => g.name) || [],
-      }));
+      const newMovies: Movie[] = results.map((doc: any) => {
+        // Корректно извлекаем год: если нет даты — ставим 0, чтобы контент-фильтр/рендер не подменяли на текущий
+        const parsedYear = doc.release_date ? new Date(doc.release_date).getFullYear() : 0;
+        return {
+          id: String(doc.id),
+          title: doc.title || doc.name || 'Unknown',
+          year: parsedYear,
+          rating: doc.vote_average || 0,
+          // Теперь картинка идёт через прокси
+          poster: doc.poster_path ? { url: `${proxyUrl}/image${doc.poster_path}` } : null,
+          genres: doc.genres?.map((g: any) => g.name) || [],
+        };
+      });
 
                   // Фильтруем контент согласно правилам ВК
             const safeMovies = filterSafeContent(newMovies);
@@ -103,8 +107,12 @@ const InfiniteScroll: React.FC = () => {
         return [...prev, ...uniq];
       });
 
-      // Определяем, есть ли ещё страницы
-      setHasMore(typeof data.total_pages === 'number' ? page < data.total_pages : false);
+      // Определяем, есть ли ещё страницы. Если текущая страница вернула пустой результат — останавливаемся
+      setHasMore(
+        typeof data.total_pages === 'number'
+          ? results.length > 0 && page < data.total_pages
+          : false
+      );
     } catch (err) {
       console.error('fetchMovies error:', err);
       setError('Ошибка загрузки фильмов');
@@ -130,11 +138,11 @@ const InfiniteScroll: React.FC = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && hasMore) {
+        if (entry.isIntersecting && hasMore && !loading) {
           setPage(p => p + 1);
         }
       },
-      { threshold: 1 }
+      { threshold: 0.25, root: null, rootMargin: '200px' }
     );
     if (loader.current) observer.observe(loader.current);
     return () => {
